@@ -53,8 +53,10 @@ def title_from_question(question):
 st.set_page_config(page_title="Personal Brain", page_icon=":material/psychology:", layout="wide")
 if "theme" not in st.session_state:
     st.session_state.theme = "Light"
+if "dark_mode" not in st.session_state:
+    st.session_state.dark_mode = st.session_state.theme == "Dark"
 
-is_dark = st.session_state.theme == "Dark"
+is_dark = st.session_state.dark_mode
 page_background = "#202020" if is_dark else "#FFFFFF"
 surface = "#2B2B2B" if is_dark else "#FFFFFF"
 text = "#F5F5F5" if is_dark else "#000000"
@@ -70,7 +72,7 @@ st.markdown(
     [data-testid="stSidebar"] {{ background: {surface}; border-right: 1px solid {border}; color: {text}; }}
     [data-testid="stSidebar"] > div:first-child {{ padding-top: 1rem; }}
     .block-container {{ max-width: 900px; padding: 0 1.5rem 8rem; }}
-    [data-testid="stRadioGroup"] {{ position: fixed; top: .35rem; right: 5.5rem; z-index: 100; }}
+    [data-testid="stToggle"] {{ position: fixed; top: .35rem; right: 5.5rem; z-index: 100; padding: .2rem .5rem; background: {surface}; border: 1px solid {border}; border-radius: .45rem; }}
     .brand {{ display: flex; align-items: center; gap: .7rem; font-size: 1.2rem; font-weight: 650; margin-bottom: 2.5rem; color: {text}; }}
     .brain-mark {{ display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; border: 2px solid {text}; border-radius: 50%; color: {text}; }}
     .welcome {{ text-align: center; padding: 18vh 0 5rem; }}
@@ -89,6 +91,8 @@ st.markdown(
     [data-testid="stChatMessage"] [data-testid*="Avatar"] {{ background: {avatar} !important; color: {text} !important; }}
     [data-testid="stChatMessage"] [data-testid*="Avatar"] svg {{ color: {text} !important; fill: {text} !important; }}
     [data-testid="stChatMessage"] button {{ background: {surface}; color: {text}; border-color: {border}; }}
+    [data-testid="stForm"] button {{ min-height: 2.5rem; color: {text} !important; background: {surface} !important; border: 1px solid {border} !important; }}
+    [data-testid="stForm"] button:hover {{ background: {composer} !important; border-color: {text} !important; }}
     [data-testid="stMarkdownContainer"] p, [data-testid="stMarkdownContainer"] li, label, h1, h2, h3 {{ color: {text}; }}
     [data-testid="stSidebar"] [data-testid="stButton"] button {{ color: {text}; background: {surface}; border-color: {border}; }}
     [data-testid="stSidebar"] [data-testid="stButton"] button:disabled {{ background: transparent; border-color: transparent; }}
@@ -100,7 +104,7 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-st.radio("Theme", ["Light", "Dark"], key="theme", horizontal=True, label_visibility="collapsed")
+st.toggle("Dark mode", key="dark_mode")
 
 if "chats" not in st.session_state:
     st.session_state.chats = load_chats()
@@ -117,6 +121,9 @@ active_chat = next(
     ),
     None,
 )
+if "editing_message_index" not in st.session_state:
+    st.session_state.editing_message_index = None
+
 
 with st.sidebar:
     logo_column, title_column = st.columns([1, 4], vertical_alignment="center")
@@ -204,23 +211,20 @@ for message_index, msg in enumerate(active_chat["messages"] if active_chat else 
             with message_column:
                 st.markdown(msg["content"])
             with edit_column:
-                if st.button(
+                edit_clicked = st.button(
                     "",
                     key=f"edit-{active_chat['id']}-{message_index}",
                     icon=":material/edit:",
                     help="Edit and rerun this question",
-                ):
+                )
+                if edit_clicked:
                     st.session_state.editing_message_index = message_index
-                    st.rerun()
         else:
             st.markdown(msg["content"])
         if msg.get("sources"):
             with st.expander("Sources"):
                 for s in msg["sources"]:
                     st.markdown(f"- **{s['paper']}**, page {s['page']}")
-
-if "editing_message_index" not in st.session_state:
-    st.session_state.editing_message_index = None
 
 if active_chat and st.session_state.editing_message_index is not None:
     edit_index = st.session_state.editing_message_index
