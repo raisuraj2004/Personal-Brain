@@ -50,9 +50,24 @@ def title_from_question(question):
     return title if len(title) <= 45 else f"{title[:42].rstrip()}..."
 
 
-st.set_page_config(page_title="Research Agent",)
-st.title(" Our Local Research Agent")
-st.caption("Runs 100% locally. No data is sent to the cloud. Your data is safe and private.")
+st.set_page_config(page_title="Personal Brain", page_icon=":material/psychology:", layout="wide")
+st.markdown(
+    """
+    <style>
+    [data-testid="stAppViewContainer"] { background: #ffffff; }
+    [data-testid="stSidebar"] { background: #f7f7f8; border-right: 1px solid #e5e5e5; }
+    [data-testid="stSidebar"] > div:first-child { padding-top: 1rem; }
+    .block-container { max-width: 900px; padding: 2rem 1.5rem 8rem; }
+    .brand { font-size: 1.2rem; font-weight: 650; letter-spacing: -0.02em; margin-bottom: 2.5rem; }
+    .welcome { text-align: center; padding: 18vh 0 5rem; }
+    .welcome h1 { font-size: 2rem; font-weight: 600; letter-spacing: -0.04em; margin-bottom: .6rem; }
+    .welcome p { color: #6b6b6b; font-size: .95rem; }
+    [data-testid="stChatInput"] { border-color: #d9d9d9; box-shadow: 0 4px 18px rgba(0, 0, 0, .07); }
+    [data-testid="stChatMessage"] { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 if "chats" not in st.session_state:
     st.session_state.chats = load_chats()
@@ -71,19 +86,15 @@ active_chat = next(
 )
 
 with st.sidebar:
-    st.header("Settings")
+    st.markdown('<div class="brand">Personal Brain</div>', unsafe_allow_html=True)
+    if st.button("New chat", icon=":material/edit_square:", type="primary", width="stretch"):
+        st.session_state.active_chat_id = None
+        st.rerun()
+
+    st.caption("Local assistant")
     model = st.text_input("Ollama model name", value=DEFAULT_MODEL)
     st.divider()
     st.subheader("Chat history")
-    if st.button(
-        "New chat",
-        icon=":material/edit_square:",
-        type="primary",
-        use_container_width=True,
-        help="Start a fresh conversation",
-    ):
-        st.session_state.active_chat_id = None
-        st.rerun()
 
     sorted_chats = sorted(
         st.session_state.chats,
@@ -96,7 +107,7 @@ with st.sidebar:
             selected = st.button(
                 label,
                 key=f"chat-{chat['id']}",
-                use_container_width=True,
+                width="stretch",
                 type=(
                     "primary"
                     if active_chat and chat["id"] == active_chat["id"]
@@ -134,6 +145,13 @@ with st.sidebar:
                 st.session_state.active_chat_id = None
             save_chats(st.session_state.chats)
             st.rerun()
+
+if not active_chat or not active_chat["messages"]:
+    st.markdown(
+        '<div class="welcome"><h1>How can I help you today?</h1>'
+        '<p>Ask anything, or upload a PDF to chat with your documents.</p></div>',
+        unsafe_allow_html=True,
+    )
 
 for message_index, msg in enumerate(active_chat["messages"] if active_chat else []):
     with st.chat_message(msg["role"]):
@@ -174,9 +192,9 @@ if active_chat and st.session_state.editing_message_index is not None:
         )
         save_edit, cancel_edit = st.columns(2)
         with save_edit:
-            rerun_edit = st.form_submit_button("Save and rerun", type="primary", use_container_width=True)
+            rerun_edit = st.form_submit_button("Save and rerun", type="primary", width="stretch")
         with cancel_edit:
-            cancel_edit = st.form_submit_button("Cancel", use_container_width=True)
+            cancel_edit = st.form_submit_button("Cancel", width="stretch")
 
     if cancel_edit:
         st.session_state.editing_message_index = None
@@ -198,7 +216,7 @@ if active_chat and st.session_state.editing_message_index is not None:
         st.rerun()
 
 submission = st.chat_input(
-    "Ask a question about your papers",
+    "Message Personal Brain",
     accept_file="multiple",
     file_type=["pdf"],
     disabled=st.session_state.editing_message_index is not None,

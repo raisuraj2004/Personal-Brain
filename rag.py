@@ -129,8 +129,15 @@ Answer:"""
 def ask(question, model=DEFAULT_MODEL, top_k=3):
     """Retrieves relevant chunks and asks the local LLM to answer.
     Returns (answer_text, list_of_source_chunks)."""
-    if is_general_question(question) and not question_needs_papers(question):
+    if not question_needs_papers(question):
         return ask_general_question(question, model), []
+
+    collection = _get_collection()
+    if collection.count() == 0:
+        return (
+            "No papers have been added yet. Upload a PDF in the chat box before asking a document-specific question.",
+            [],
+        )
 
     chunks = search(question, top_k=top_k)
     if not chunks:

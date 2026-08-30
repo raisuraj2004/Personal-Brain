@@ -1,6 +1,6 @@
 
 import os
-import fitz
+import pymupdf
 import chromadb
 from sentence_transformers import SentenceTransformer
 
@@ -12,7 +12,7 @@ CHUNK_OVERLAP = 100
 
 def extract_pages(pdf_path):
     """Returns a list of (page_number, text) tuples for a PDF """
-    doc = fitz.open(pdf_path)
+    doc = pymupdf.open(pdf_path)
     pages = []
     for i, page in enumerate(doc):
         text = page.get_text()
