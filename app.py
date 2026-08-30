@@ -51,23 +51,59 @@ def title_from_question(question):
 
 
 st.set_page_config(page_title="Personal Brain", page_icon=":material/psychology:", layout="wide")
+if "theme" not in st.session_state:
+    st.session_state.theme = "Light"
+
+is_dark = st.session_state.theme == "Dark"
+page_background = "#202020" if is_dark else "#FFFFFF"
+surface = "#2B2B2B" if is_dark else "#FFFFFF"
+text = "#F5F5F5" if is_dark else "#000000"
+muted_text = "#D0D0D0" if is_dark else "#000000"
+border = "#777777" if is_dark else "#000000"
+composer = "#383838" if is_dark else "#FFFFFF"
+avatar = "#777777" if is_dark else "#000000"
 st.markdown(
-    """
+    f"""
     <style>
-    [data-testid="stAppViewContainer"] { background: #ffffff; }
-    [data-testid="stSidebar"] { background: #f7f7f8; border-right: 1px solid #e5e5e5; }
-    [data-testid="stSidebar"] > div:first-child { padding-top: 1rem; }
-    .block-container { max-width: 900px; padding: 2rem 1.5rem 8rem; }
-    .brand { font-size: 1.2rem; font-weight: 650; margin-bottom: 2.5rem; }
-    .welcome { text-align: center; padding: 18vh 0 5rem; }
-    .welcome h1 { font-size: 2rem; font-weight: 600; margin-bottom: .6rem; }
-    .welcome p { color: #6b6b6b; font-size: .95rem; }
-    [data-testid="stChatInput"] { border-color: #d9d9d9; box-shadow: 0 4px 18px rgba(0, 0, 0, .07); }
-    [data-testid="stChatMessage"] { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+    html, body {{ font-family: "Söhne", "Segoe UI", sans-serif; }}
+    [data-testid="stAppViewContainer"], [data-testid="stAppViewContainer"] > .main, section.main, [data-testid="stHeader"] {{ background: {page_background}; color: {text}; }}
+    [data-testid="stSidebar"] {{ background: {surface}; border-right: 1px solid {border}; color: {text}; }}
+    [data-testid="stSidebar"] > div:first-child {{ padding-top: 1rem; }}
+    .block-container {{ max-width: 900px; padding: 0 1.5rem 8rem; }}
+    div[data-testid="stHorizontalBlock"]:has(.main-header-title) {{ position: sticky; top: 0; z-index: 20; align-items: center; min-height: 5rem; background: {page_background}; border-bottom: 1px solid {border}; }}
+    .main-header-title {{ color: {text}; font-size: 1.15rem; font-weight: 650; text-align: center; }}
+    .brand {{ display: flex; align-items: center; gap: .7rem; font-size: 1.2rem; font-weight: 650; margin-bottom: 2.5rem; color: {text}; }}
+    .brain-mark {{ display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; border: 2px solid {text}; border-radius: 50%; color: {text}; }}
+    .welcome {{ text-align: center; padding: 18vh 0 5rem; }}
+    .welcome h1 {{ color: {text}; font-size: 2rem; font-weight: 600; margin-bottom: .6rem; }}
+    .welcome p {{ color: {muted_text}; font-size: .95rem; }}
+    .model-label {{ color: {muted_text}; font-size: .75rem; font-weight: 650; text-transform: uppercase; }}
+    .model-value {{ color: {text}; border: 1px solid {border}; padding: .6rem .75rem; margin: .35rem 0 1.5rem; font-size: .9rem; }}
+    [data-testid="stBottom"], [data-testid="stBottom"] > div, [data-testid="stBottomBlockContainer"], footer {{ background: {page_background} !important; }}
+    [data-testid="stChatInput"], [data-testid="stChatInput"] > div {{ background: {composer}; border: 1px solid {border}; box-shadow: none; }}
+    [data-testid="stChatInput"] textarea, [data-testid="stChatInput"] textarea::placeholder {{ color: {text} !important; }}
+    [data-testid="stChatInput"] button {{ color: {text} !important; background: {surface}; }}
+    [data-testid="stChatMessage"] {{ background: {surface}; color: {text}; padding-top: 1.25rem; padding-bottom: 1.25rem; }}
+    [data-testid="stChatMessage"] [data-testid*="Avatar"] {{ background: {avatar} !important; color: {text} !important; }}
+    [data-testid="stChatMessage"] [data-testid*="Avatar"] svg {{ color: {text} !important; fill: {text} !important; }}
+    [data-testid="stChatMessage"] button {{ background: {surface}; color: {text}; border-color: {border}; }}
+    [data-testid="stMarkdownContainer"] p, [data-testid="stMarkdownContainer"] li, label, h1, h2, h3 {{ color: {text}; }}
+    [data-testid="stSidebar"] [data-testid="stButton"] button {{ color: {text}; background: {surface}; border-color: {border}; }}
+    [data-testid="stSidebar"] [data-testid="stButton"] button:disabled {{ background: transparent; border-color: transparent; }}
+    [data-testid="stSidebar"] [data-testid="stRadio"] label {{ color: {text}; }}
+    [data-testid="stSidebarCollapsedControl"] button, [data-testid="stSidebarCollapseButton"] button {{ color: #F5F5F5 !important; background: #2B2B2B !important; border: 1px solid #777777 !important; }}
+    div[data-testid="stHorizontalBlock"]:has(.main-header-title) [data-testid="stRadio"] {{ margin: 0; }}
+    div[data-testid="stHorizontalBlock"]:has(.main-header-title) [data-testid="stRadio"] label {{ color: {text}; }}
+    [data-testid="stToolbar"] {{ display: none; }}
     </style>
     """,
     unsafe_allow_html=True,
 )
+header_left, header_center, header_right = st.columns([1, 2, 1], vertical_alignment="center")
+with header_center:
+    st.markdown('<div class="main-header-title">Personal Brain</div>', unsafe_allow_html=True)
+with header_right:
+    st.radio("Theme", ["Light", "Dark"], key="theme", horizontal=True, label_visibility="collapsed")
 
 if "chats" not in st.session_state:
     st.session_state.chats = load_chats()
@@ -86,13 +122,24 @@ active_chat = next(
 )
 
 with st.sidebar:
-    st.markdown('<div class="brand">Personal Brain</div>', unsafe_allow_html=True)
+    logo_column, title_column = st.columns([1, 4], vertical_alignment="center")
+    with logo_column:
+        st.button(
+            "",
+            key="brain-logo",
+            icon=":material/psychology:",
+            disabled=True,
+            help="Personal Brain",
+        )
+    with title_column:
+        st.markdown('<div class="brand">Personal Brain</div>', unsafe_allow_html=True)
     if st.button("New chat", icon=":material/edit_square:", type="primary", width="stretch"):
         st.session_state.active_chat_id = None
         st.rerun()
 
-    st.caption("Local assistant")
-    model = st.text_input("Ollama model name", value=DEFAULT_MODEL)
+    st.markdown('<div class="model-label">Ollama model</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="model-value">{DEFAULT_MODEL}</div>', unsafe_allow_html=True)
+    model = DEFAULT_MODEL
     st.divider()
     st.subheader("Chat history")
 
