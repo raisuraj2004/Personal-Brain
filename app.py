@@ -58,9 +58,9 @@ st.markdown(
     [data-testid="stSidebar"] { background: #f7f7f8; border-right: 1px solid #e5e5e5; }
     [data-testid="stSidebar"] > div:first-child { padding-top: 1rem; }
     .block-container { max-width: 900px; padding: 2rem 1.5rem 8rem; }
-    .brand { font-size: 1.2rem; font-weight: 650; letter-spacing: -0.02em; margin-bottom: 2.5rem; }
+    .brand { font-size: 1.2rem; font-weight: 650; margin-bottom: 2.5rem; }
     .welcome { text-align: center; padding: 18vh 0 5rem; }
-    .welcome h1 { font-size: 2rem; font-weight: 600; letter-spacing: -0.04em; margin-bottom: .6rem; }
+    .welcome h1 { font-size: 2rem; font-weight: 600; margin-bottom: .6rem; }
     .welcome p { color: #6b6b6b; font-size: .95rem; }
     [data-testid="stChatInput"] { border-color: #d9d9d9; box-shadow: 0 4px 18px rgba(0, 0, 0, .07); }
     [data-testid="stChatMessage"] { padding-top: 1.25rem; padding-bottom: 1.25rem; }
