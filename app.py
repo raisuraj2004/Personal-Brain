@@ -70,8 +70,7 @@ st.markdown(
     [data-testid="stSidebar"] {{ background: {surface}; border-right: 1px solid {border}; color: {text}; }}
     [data-testid="stSidebar"] > div:first-child {{ padding-top: 1rem; }}
     .block-container {{ max-width: 900px; padding: 0 1.5rem 8rem; }}
-    div[data-testid="stHorizontalBlock"]:has(.main-header-title) {{ position: sticky; top: 3.5rem; z-index: 10; min-height: 4rem; padding: 0 .5rem; background: {page_background}; border-bottom: 1px solid {border}; }}
-    .main-header-title {{ color: {text}; font-size: 1.15rem; font-weight: 650; line-height: 1.3; margin: 0; padding: 1rem 0; text-align: center; }}
+    [data-testid="stRadioGroup"] {{ position: fixed; top: .35rem; right: 5.5rem; z-index: 100; }}
     .brand {{ display: flex; align-items: center; gap: .7rem; font-size: 1.2rem; font-weight: 650; margin-bottom: 2.5rem; color: {text}; }}
     .brain-mark {{ display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; border: 2px solid {text}; border-radius: 50%; color: {text}; }}
     .welcome {{ text-align: center; padding: 18vh 0 5rem; }}
@@ -84,6 +83,9 @@ st.markdown(
     [data-testid="stChatInput"] textarea, [data-testid="stChatInput"] textarea::placeholder {{ color: {text} !important; }}
     [data-testid="stChatInput"] button {{ color: {text} !important; background: {surface}; }}
     [data-testid="stChatMessage"] {{ background: {surface}; color: {text}; padding-top: 1.25rem; padding-bottom: 1.25rem; }}
+    [data-testid="stChatMessage"] [data-testid*="Avatar"] {{ display: none !important; }}
+    [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {{ justify-content: flex-end; margin-left: 20%; }}
+    [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {{ justify-content: flex-start; margin-right: 20%; }}
     [data-testid="stChatMessage"] [data-testid*="Avatar"] {{ background: {avatar} !important; color: {text} !important; }}
     [data-testid="stChatMessage"] [data-testid*="Avatar"] svg {{ color: {text} !important; fill: {text} !important; }}
     [data-testid="stChatMessage"] button {{ background: {surface}; color: {text}; border-color: {border}; }}
@@ -98,11 +100,7 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-header_left, header_center, header_right = st.columns([1, 2, 1], vertical_alignment="center")
-with header_center:
-    st.markdown('<h2 class="main-header-title">Personal Brain</h2>', unsafe_allow_html=True)
-with header_right:
-    st.radio("Theme", ["Light", "Dark"], key="theme", horizontal=True, label_visibility="collapsed")
+st.radio("Theme", ["Light", "Dark"], key="theme", horizontal=True, label_visibility="collapsed")
 
 if "chats" not in st.session_state:
     st.session_state.chats = load_chats()
