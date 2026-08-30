@@ -72,7 +72,7 @@ st.markdown(
     [data-testid="stSidebar"] {{ background: {surface}; border-right: 1px solid {border}; color: {text}; }}
     [data-testid="stSidebar"] > div:first-child {{ padding-top: 1rem; }}
     .block-container {{ max-width: 900px; padding: 0 1.5rem 8rem; }}
-    [data-testid="stToggle"] {{ position: fixed; top: .35rem; right: 5.5rem; z-index: 100; padding: .2rem .5rem; background: {surface}; border: 1px solid {border}; border-radius: .45rem; }}
+    [data-testid="stToggle"], div[data-testid="stToggle"], div[data-testid="stElementContainer"]:has(input[aria-label="Dark mode"]) {{ position: fixed !important; top: 3.25rem !important; right: 1.5rem !important; z-index: 1000 !important; padding: .25rem .6rem; background: {surface} !important; border: 1px solid {border} !important; border-radius: .45rem; pointer-events: auto !important; }}
     .brand {{ display: flex; align-items: center; gap: .7rem; font-size: 1.2rem; font-weight: 650; margin-bottom: 2.5rem; color: {text}; }}
     .brain-mark {{ display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; border: 2px solid {text}; border-radius: 50%; color: {text}; }}
     .welcome {{ text-align: center; padding: 18vh 0 5rem; }}
