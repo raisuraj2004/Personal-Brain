@@ -1,5 +1,6 @@
 pymupdf
+pillow
+pytesseract
 chromadb
 sentence-transformers
-streamlit
 requests

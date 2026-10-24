@@ -1,21 +1,51 @@
 
 import os
+
 import pymupdf
 import chromadb
+from PIL import Image
+import pytesseract
 from sentence_transformers import SentenceTransformer
 
 PAPERS_FOLDER = "papers"
 DB_FOLDER = "chroma_db"
 CHUNK_SIZE = 700 
 CHUNK_OVERLAP = 100
+OCR_DPI = 200
+OCR_LANGUAGE = "eng"
+TESSERACT_CMD = os.environ.get(
+    "TESSERACT_CMD",
+    r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+)
+
+
+def _ocr_page(page):
+    """Extract text from an image-only PDF page with local Tesseract OCR."""
+    if TESSERACT_CMD:
+        pytesseract.pytesseract.tesseract_cmd = TESSERACT_CMD
+
+    pixmap = page.get_pixmap(
+        matrix=pymupdf.Matrix(OCR_DPI / 72, OCR_DPI / 72),
+        alpha=False,
+    )
+    image = Image.frombytes("RGB", [pixmap.width, pixmap.height], pixmap.samples)
+    try:
+        return pytesseract.image_to_string(image, lang=OCR_LANGUAGE).strip()
+    except pytesseract.TesseractNotFoundError as error:
+        raise RuntimeError(
+            "OCR requires Tesseract. Install Tesseract and add it to PATH, "
+            "or set the TESSERACT_CMD environment variable to its executable."
+        ) from error
 
 
 def extract_pages(pdf_path):
-    """Returns a list of (page_number, text) tuples for a PDF """
+    """Return page text, using OCR when a page has no text layer."""
     doc = pymupdf.open(pdf_path)
     pages = []
     for i, page in enumerate(doc):
         text = page.get_text()
+        if not text.strip():
+            text = _ocr_page(page)
         if text.strip():
             pages.append((i + 1, text))
     doc.close()

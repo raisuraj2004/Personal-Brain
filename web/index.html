@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101113">
+    <title>Personal Brain</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Chat sidebar">
+        <a class="brand" href="/" aria-label="Personal Brain home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none">
+              <path d="M16 4.5 27.5 11v10L16 27.5 4.5 21V11L16 4.5Z" stroke="currentColor" stroke-width="1.8"/>
+              <path d="m10 18 4-8 4 12 4-8" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/>
+            </svg>
+          </span>
+          <span>Personal <strong>Brain</strong></span>
+        </a>
+
+        <button class="new-chat-button" id="new-chat" type="button">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"/></svg>
+          <span>New chat</span>
+          <kbd>⌘ K</kbd>
+        </button>
+
+        <label class="search-box">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="5.5" stroke="currentColor" stroke-width="1.5"/><path d="m13 13 4 4" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"/></svg>
+          <input id="search-chats" type="search" placeholder="Search chats" autocomplete="off">
+          <kbd>/</kbd>
+        </label>
+
+        <div class="history-heading">
+          <span>YOUR CHATS</span>
+          <span class="history-count" id="history-count">0</span>
+        </div>
+        <nav class="chat-list" id="chat-list" aria-label="Chat history"></nav>
+
+        <div class="sidebar-bottom">
+          <div class="model-card">
+            <span class="model-icon" aria-hidden="true">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5 16.5 6v8L10 17.5 3.5 14V6L10 2.5Z" stroke="currentColor" stroke-width="1.3"/><circle cx="10" cy="10" r="2.2" stroke="currentColor" stroke-width="1.3"/></svg>
+            </span>
+            <span class="model-copy"><small>RUNNING LOCALLY</small><strong>llama3.1</strong></span>
+            <span class="online-dot" title="Local model"></span>
+          </div>
+          <div class="privacy-note"><span aria-hidden="true">●</span> Your research stays private</div>
+        </div>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <div class="assistant-label">
+            <span class="assistant-avatar" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 3.2 20.8 8v8L12 20.8 3.2 16V8L12 3.2Z" stroke="currentColor" stroke-width="1.5"/><path d="m8 14 2.2-4.5L12.5 17l2.1-4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"/></svg>
+            </span>
+            <span>Research assistant</span>
+            <span class="topbar-chevron" aria-hidden="true">⌄</span>
+          </div>
+          <div class="topbar-actions">
+            <span class="local-badge"><span></span> PRIVATE &amp; LOCAL</span>
+            <button class="icon-button theme-button" id="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">
+              <svg class="sun-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="3.3" stroke="currentColor" stroke-width="1.4"/><path d="M10 1.8v2M10 16.2v2M18.2 10h-2M3.8 10h-2m14-5.8-1.4 1.4M5.6 14.4l-1.4 1.4m11.6 0-1.4-1.4M5.6 5.6 4.2 4.2" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"/></svg>
+              <svg class="moon-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M16.7 12.1A7 7 0 0 1 7.9 3.3a7 7 0 1 0 8.8 8.8Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>
+            </button>
+          </div>
+        </header>
+
+        <section class="conversation" id="conversation" aria-live="polite">
+          <div class="welcome" id="welcome">
+            <div class="welcome-orb" aria-hidden="true"><span></span></div>
+            <p class="eyebrow">YOUR PERSONAL RESEARCH ASSISTANT</p>
+            <h1>Good evening.<br><span>What are we exploring?</span></h1>
+            <p class="welcome-caption">Ask a question, explore an idea, or dive into your research.</p>
+            <div class="suggestion-grid" id="suggestion-grid">
+              <button class="suggestion-card" type="button" data-prompt="Summarize the key findings in my research papers">
+                <span class="suggestion-icon lavender">✳</span><span><strong>Explore my papers</strong><small>Find key findings and insights</small></span><span class="suggestion-arrow">↗</span>
+              </button>
+              <button class="suggestion-card" type="button" data-prompt="What are the main themes across my papers?">
+                <span class="suggestion-icon mint">⌘</span><span><strong>Connect the dots</strong><small>Discover themes across research</small></span><span class="suggestion-arrow">↗</span>
+              </button>
+              <button class="suggestion-card" type="button" data-prompt="Explain a complex research concept simply">
+                <span class="suggestion-icon peach">◈</span><span><strong>Make it clear</strong><small>Break down a complex concept</small></span><span class="suggestion-arrow">↗</span>
+              </button>
+              <button class="suggestion-card" type="button" data-action="upload">
+                <span class="suggestion-icon blue">↥</span><span><strong>Add your research</strong><small>Upload PDFs to your library</small></span><span class="suggestion-arrow">↗</span>
+              </button>
+            </div>
+          </div>
+          <div class="message-list" id="message-list"></div>
+        </section>
+
+        <div class="composer-dock">
+          <div class="upload-status" id="upload-status" role="status" hidden></div>
+          <form class="composer" id="composer">
+            <div class="attachment-list" id="attachment-list"></div>
+            <textarea id="message-input" rows="1" placeholder="Message your research assistant..." aria-label="Message your research assistant"></textarea>
+            <div class="composer-toolbar">
+              <div class="composer-tools">
+                <button class="tool-button attach-button" id="attach-button" type="button" aria-label="Attach PDF" title="Attach PDF">
+                  <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m7.5 10.8 4.9-4.9a2.7 2.7 0 0 1 3.8 3.8l-6.7 6.7a4.2 4.2 0 0 1-5.9-5.9l6.7-6.7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>
+                  <span>Add PDFs</span>
+                </button>
+                <span class="composer-hint">Ask about your papers or anything else</span>
+              </div>
+              <button class="send-button" id="send-button" type="submit" aria-label="Send message" title="Send message">
+                <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 15.8V4.2M5.5 8.7 10 4.2l4.5 4.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7"/></svg>
+              </button>
+            </div>
+          </form>
+          <p class="disclaimer">Personal Brain can make mistakes. Verify important information with your sources.</p>
+        </div>
+        <input id="file-input" type="file" accept=".pdf,application/pdf" multiple hidden>
+      </main>
+    </div>
+
+    <dialog class="edit-dialog" id="edit-dialog">
+      <form method="dialog" class="edit-form" id="edit-form">
+        <div class="edit-dialog-heading"><span>Edit your question</span><button type="button" class="icon-button close-edit" aria-label="Close">×</button></div>
+        <textarea id="edit-input" rows="4" aria-label="Edit your question"></textarea>
+        <div class="edit-actions"><button class="quiet-button cancel-edit" type="button">Cancel</button><button class="primary-button" type="submit">Save &amp; rerun <span>↗</span></button></div>
+      </form>
+    </dialog>
+  </body>
+</html>
