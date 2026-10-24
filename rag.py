@@ -30,7 +30,11 @@ GENERAL_QUESTION_PREFIXES = (
 )
 PAPER_TERMS = (
     "paper", "papers", "document", "documents", "pdf", "excerpt",
-    "source", "research", "study", "article", "according to",
+    "source", "sources", "research", "study", "article", "according to",
+    "from the paper", "in the paper", "in the document", "in my pdf",
+    "in my paper", "from my document", "from the document", "page ", "pages",
+    "finding", "findings", "result", "results", "methodology", "conclusion",
+    "quote", "quoted", "mentioned in", "cited in"
 )
 
 
@@ -99,7 +103,21 @@ def is_general_question(question):
 def question_needs_papers(question):
     """Returns True when the wording asks for information from uploaded documents."""
     normalized = " ".join(question.lower().split())
-    return any(term in normalized for term in PAPER_TERMS)
+
+    if any(term in normalized for term in PAPER_TERMS):
+        return True
+
+    if any(phrase in normalized for phrase in (
+        "what does the paper say",
+        "summarize this paper",
+        "summarize the paper",
+        "key findings in the document",
+        "what are the findings",
+        "explain the results",
+    )):
+        return True
+
+    return False
 
 
 def ask_general_question(question, model):
@@ -127,24 +145,25 @@ Answer:"""
 
 
 def ask(question, model=DEFAULT_MODEL, top_k=3):
-    """Retrieves relevant chunks and asks the local LLM to answer.
+    """Routes simple questions to the model and document questions to retrieval.
     Returns (answer_text, list_of_source_chunks)."""
-    if not question_needs_papers(question):
+    if not question or not question.strip():
+        return "Please ask a question.", []
+
+    normalized = " ".join(question.lower().split())
+    if not question_needs_papers(normalized):
         return ask_general_question(question, model), []
 
     collection = _get_collection()
     if collection.count() == 0:
-        return (
-            "No papers have been added yet. Upload a PDF in the chat box before asking a document-specific question.",
-            [],
-        )
+        return ask_general_question(
+            f"{question} (Answer from general knowledge if no uploaded papers are available.)",
+            model,
+        ), []
 
     chunks = search(question, top_k=top_k)
     if not chunks:
-        return (
-            "No papers have been added yet. Put PDFs in the papers/ folder and run ingest.py first.",
-            [],
-        )
+        return ask_general_question(question, model), []
 
     prompt = build_prompt(question, chunks)
     response = requests.post(
