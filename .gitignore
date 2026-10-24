@@ -1,5 +1,10 @@
 .venv/
+.vscode/
+.streamlit/
 __pycache__/
 *.py[cod]
 chroma_db/
 papers/
+chat_history.json
+PersonalAgent_Project_Report.pdf
+*.pdf
